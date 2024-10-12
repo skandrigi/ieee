@@ -1,32 +1,42 @@
 "use client";
-import Notifications from "./notifications";
-import dynamic from 'next/dynamic';
-import { useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
+import Notifications from './notifications';
+import MyMap from './map';
 
-export default function Home() {
-  const Map = useMemo(() => dynamic(
-    () => import('./map'),
-    { 
-      loading: () => <p>A map is loading</p>,
-      ssr: false
-    }
-  ), []);
-  
-  const position = [30.6212, -96.3404]; 
-  const zoom = 13; 
+export default function Dashboard() {
+    const [notifications, setNotifications] = useState([]);
+    const [position, setPosition] = useState([30.6212, -96.3404]);
 
-  return (
-    <div className="flex">
-      <div className="bg-slate-200 grid grid-rows-[20px_1fr_20px] w-[200px] min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-        <div className="content-center items-center text-center">
-          <Notifications />
+
+    useEffect(() => {
+        const ws = new WebSocket('wss://ntfy.sh/JM4j2e0yT6akacaQ/ws');
+        ws.onmessage = (event) => {
+            const notification = JSON.parse(event.data);
+            console.log('Received notification:', notification);
+            setNotifications((prevNotifications) => [...prevNotifications, notification]);
+
+            if (notification.lat && notification.lng) {
+                setPosition([notification.lat, notification.lng]);
+            }
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        return () => {
+            ws.close();
+        };
+    }, []);
+
+    return (
+      <div className="flex">
+        <div className="min-h-screen w-[15%] bg-yellow-100 border border-black">
+          <Notifications notifications={notifications} />
+        </div>
+        <div className="w-[85%]">
+          <MyMap position={position} zoom={18}/>
         </div>
       </div>
-      <div className="w-screen h-[100vh] items-center justify-center">
-        <div className="w-screen h-[100vh]">
-          <Map position={position} zoom={zoom} />
-        </div>
-      </div>
-    </div>
-  );
+    );
 }

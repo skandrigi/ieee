@@ -1,45 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import {ScrollArea,ScrollBar} from "./components/ui/scroll-area";
 
-export default function Notifications() {
-    const [notifications, setNotifications] = useState([]);
 
-    // WebSocket connection to ntfy
-    useEffect(() => {
-        // Establish WebSocket connection
-        const ws = new WebSocket('wss://ntfy.sh/JM4j2e0yT6akacaQ/ws');
-
-        // Handle receiving new notifications from the WebSocket
-        ws.onmessage = (event) => {
-            const notification = JSON.parse(event.data); // Parse the WebSocket message
-            console.log('Received notification:', notification);
-
-            // Update notifications state with the new notification
-            setNotifications((prevNotifications) => [...prevNotifications, notification]);
-        };
-
-        // Handle WebSocket errors
-        ws.onerror = (error) => {
-            console.error('WebSocket error:', error);
-        };
-
-        // Cleanup: close WebSocket connection on component unmount
-        return () => {
-            ws.close();
-        };
-    }, []); // Empty dependency array means this will run only on component mount and unmount
-
+export default function Notifications({ notifications }) {
     return (
-        <div>
-            <h1>Notifications</h1>
-            {notifications.length > 0 ? (
-                <ul>
-                    {notifications.map((notification, index) => (
-                        <li key={index}>{notification.body || notification.message}</li>
-                    ))}
-                </ul>
-            ) : (
-                <p>No notifications yet</p>
-            )}
+        <div className="items-center text-center">
+            <h1 className="text-xl bg-red-900 py-4 text-white font-bold border-b-4 border-black">Location History</h1>
+            <ScrollArea className="h-64 w-full overflow-auto relative">
+                <div className="pr-4">
+                    {notifications.length > 0 ? (
+                        <ul>
+                            {notifications.slice().reverse().map((notification, index) => (
+                                <div className="py-2 border-b-[1px] border-black" key={index}>
+                                    <li>{notification.body || notification.message}</li>
+                                </div>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>No notifications yet</p>
+                    )}
+                </div>
+                <ScrollBar orientation="vertical" />
+            </ScrollArea>
         </div>
     );
 }
