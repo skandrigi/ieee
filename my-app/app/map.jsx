@@ -8,17 +8,15 @@ function PanToMarker({ position }) {
     const map = useMap();
 
     useEffect(() => {
-        // Only fly to position if it's not the default one and position is valid
         if (position) {
-            map.flyTo(position, 18);
+            map.flyTo(position, 18); 
         }
     }, [position, map]);
 
     return null;
 }
 
-export default function MyMap({ positions = [], zoom }) {
-    // Fallback to default center if no positions are available
+export default function MyMap({ positions = [], zoom, selectedPosition }) {
     const defaultCenter = [30.6212, -96.3404];
     const lastPosition = positions.length > 0 ? positions[positions.length - 1].position : null;
     const center = lastPosition || defaultCenter;
@@ -40,7 +38,7 @@ export default function MyMap({ positions = [], zoom }) {
                     </Marker>
                 )
             ))}
-            {lastPosition && <PanToMarker position={lastPosition} />}
+            {selectedPosition ? <PanToMarker position={selectedPosition} /> : <PanToMarker position={lastPosition} />}
         </MapContainer>
     );
 }
