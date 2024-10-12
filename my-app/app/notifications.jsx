@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollArea, ScrollBar } from "./components/ui/scroll-area";
 
 export default function Notifications({ notifications, onNotificationClick }) {
+    const locationNotifications = notifications.filter(notification => notification.lat && notification.lng);
     return (
         <div className="items-center text-center font-mono">
             <h1 className="text-xl bg-red-900 py-4 text-white font-bold border-b-4 border-black">Location History</h1>
@@ -12,8 +13,8 @@ export default function Notifications({ notifications, onNotificationClick }) {
                             {notifications.slice().reverse().map((notification, index) => (
                                 <div 
                                     key={index}
-                                    className="py-2 border-b-[1px] border-black cursor-pointer"
-                                    onClick={() => onNotificationClick(notification)} // Trigger the click event
+                                    className="py-2 border-b-[1px] border-black cursor-pointer hover:bg-yellow-300"
+                                    onClick={() => onNotificationClick(notification)} 
                                 >
                                     <li>{notification.body || notification.message}</li>
                                 </div>
