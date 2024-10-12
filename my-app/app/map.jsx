@@ -3,7 +3,6 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-defaulticon-compatibility';
 import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
 import { useEffect } from 'react';
-
 function PanToMarker({ position }) {
     const map = useMap();
 
@@ -27,7 +26,8 @@ export default function MyMap({ positions, zoom }) {
                 <Marker key={index} position={position}>
                     <Popup>
                         Location: <br />
-                        {position[0] + ', ' + position[1]}
+                        {position[0] + ', ' + position[1]} <br />
+                        Timestamp: {}
                     </Popup>
                 </Marker>
             ))}
