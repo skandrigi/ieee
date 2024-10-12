@@ -1,11 +1,11 @@
-
-import React, { useState, useEffect } from 'react';
+"use client";
+import { useState, useEffect } from 'react';
 import Notifications from './notifications';
 import MyMap from './map';
 
 export default function Dashboard() {
     const [notifications, setNotifications] = useState([]);
-    const [position, setPosition] = useState([30.6212, -96.3404]);
+    const [positions, setPositions] = useState([[30.6212, -96.3404]]);
 
     useEffect(() => {
         const ws = new WebSocket('wss://ntfy.sh/JM4j2e0yT6akacaQ/ws');
@@ -15,7 +15,7 @@ export default function Dashboard() {
             setNotifications((prevNotifications) => [...prevNotifications, notification]);
 
             if (notification.lat && notification.lng) {
-                setPosition([notification.lat, notification.lng]); 
+                setPositions((prevPositions) => [...prevPositions, [notification.lat, notification.lng]]);
             }
         };
 
@@ -30,20 +30,17 @@ export default function Dashboard() {
 
     const handleNotificationClick = (notification) => {
         if (notification.lat && notification.lng) {
-            setPosition([notification.lat, notification.lng]); 
+            setPositions((prevPositions) => [...prevPositions, [notification.lat, notification.lng]]);
         }
     };
 
     return (
-        <div className="flex">
-            <div className="h-[70%] w-[18%] bg-yellow-100 border border-black">
-                <Notifications 
-                    notifications={notifications} 
-                    onNotificationClick={handleNotificationClick} 
-                />
+        <div className="relative w-full h-screen">
+            <div className="absolute top-0 right-0 w-[20%] h-[50%] bg-yellow-100 border border-black z-10 overflow-y-auto">
+                <Notifications notifications={notifications} onNotificationClick={handleNotificationClick} />
             </div>
-            <div className="w-[82%] min-h-screen ">
-                <MyMap position={position} zoom={18} />
+            <div className="absolute inset-0 z-0">
+                <MyMap positions={positions} zoom={18} />
             </div>
         </div>
     );
