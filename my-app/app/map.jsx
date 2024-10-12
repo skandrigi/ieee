@@ -8,31 +8,39 @@ function PanToMarker({ position }) {
     const map = useMap();
 
     useEffect(() => {
+        // Only fly to position if it's not the default one and position is valid
         if (position) {
-            map.flyTo(position, 18); 
+            map.flyTo(position, 18);
         }
     }, [position, map]);
 
     return null;
 }
 
-export default function MyMap({ positions, zoom }) {
+export default function MyMap({ positions = [], zoom }) {
+    // Fallback to default center if no positions are available
+    const defaultCenter = [30.6212, -96.3404];
+    const lastPosition = positions.length > 0 ? positions[positions.length - 1].position : null;
+    const center = lastPosition || defaultCenter;
+
     return (
-        <MapContainer center={positions[positions.length - 1].position} zoom={zoom} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+        <MapContainer center={center} zoom={zoom} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             {positions.map((item, index) => (
-                <Marker key={index} position={item.position}>
-                    <Popup>
-                        Location: <br />
-                        {item.position + ', ' + item.position} <br />
-                        Timestamp: {item.timestamp}
-                    </Popup>
-                </Marker>
+                item.position && (
+                    <Marker key={index} position={item.position}>
+                        <Popup>
+                            Location: <br />
+                            {item.position[0] + ', ' + item.position[1]} <br />
+                            Timestamp: {item.timestamp}
+                        </Popup>
+                    </Marker>
+                )
             ))}
-            <PanToMarker position={positions[positions.length - 1].position} />
+            {lastPosition && <PanToMarker position={lastPosition} />}
         </MapContainer>
     );
 }
