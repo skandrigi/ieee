@@ -1,4 +1,4 @@
-"use client";
+
 import React, { useState, useEffect } from 'react';
 import Notifications from './notifications';
 import MyMap from './map';
@@ -36,13 +36,13 @@ export default function Dashboard() {
 
     return (
         <div className="flex">
-            <div className="min-h-screen w-[15%] bg-yellow-100 border border-black">
+            <div className="h-[70%] w-[18%] bg-yellow-100 border border-black">
                 <Notifications 
                     notifications={notifications} 
                     onNotificationClick={handleNotificationClick} 
                 />
             </div>
-            <div className="w-[85%]">
+            <div className="w-[82%] min-h-screen ">
                 <MyMap position={position} zoom={18} />
             </div>
         </div>
