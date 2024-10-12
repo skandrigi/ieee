@@ -1,11 +1,22 @@
 "use client";
 import Image from "next/image";
 import Notifications from "./notifications";
+import MyMap from "./map";
+import { useMemo } from 'react';
+import dynamic from 'next/dynamic';
 
 export default function Home() {
+  const Map = useMemo(() => dynamic(
+    () => import('./map'),
+    { 
+      loading: () => <p>A map is loading</p>,
+      ssr: false
+    }
+  ), [])
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <Notifications />
+      <Map />
     </div>
   );
 }
