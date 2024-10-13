@@ -71,8 +71,10 @@ export default function Dashboard() {
             </div>
 
             <div className="absolute inset-0 z-0">
-                {/* Pass selectedPosition to MyMap */}
                 <MyMap positions={positions} zoom={18} selectedPosition={selectedPosition} />
+            </div>
+            <div className="z-20 absolute p-2 text-2xl rounded-tr-lg left-0 bottom-0 bg-black text-white px-4">
+              CycleGuard
             </div>
         </div>
     );

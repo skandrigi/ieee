@@ -13,6 +13,7 @@ function PanToMarker({ position }) {
         }
     }, [position, map]);
 
+    
     return null;
 }
 
