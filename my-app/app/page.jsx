@@ -7,6 +7,16 @@ import MyMap from './map';
 export default function Dashboard() {
     const [notifications, setNotifications] = useState([]);
     const [positions, setPositions] = useState([{ position: [30.6212, -96.3404], timestamp: new Date().toLocaleString() }]);
+    const [selectedPosition, setSelectedPosition] = useState(null);
+
+    // Function to parse the notification string and extract latitude and longitude
+    const parseLocationMessage = (message) => {
+        // Assuming the message format is: "Location: latitude, longitude"
+        const parts = message.split(":")[1].split(",");
+        const lat = parseFloat(parts[0].trim());
+        const lng = parseFloat(parts[1].trim());
+        return { lat, lng };
+    };
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -16,13 +26,20 @@ export default function Dashboard() {
                 console.log('Received notification:', notification);
                 setNotifications((prevNotifications) => [...prevNotifications, notification]);
 
-                if (notification.lat && notification.lng) {
-                    const newPosition = {
-                        position: [notification.lat, notification.lng],
-                        timestamp: new Date().toLocaleString(),
-                    };
-                    // Add the new position
-                    setPositions((prevPositions) => [...prevPositions, newPosition]);
+                if (notification.message) {
+                    // Parse the location from the message
+                    const { lat, lng } = parseLocationMessage(notification.message);
+
+                    // Ensure lat/lng are valid numbers before updating the state
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        const newPosition = {
+                            position: [lat, lng],
+                            timestamp: new Date().toLocaleString(),
+                        };
+                        // Add the new position to the state
+                        setPositions((prevPositions) => [...prevPositions, newPosition]);
+                        setSelectedPosition([lat, lng]); // Set the new position as selected
+                    }
                 }
             };
 
@@ -37,13 +54,13 @@ export default function Dashboard() {
     }, []);
 
     const handleNotificationClick = (notification) => {
-        if (notification.lat && notification.lng) {
-            const newPosition = {
-                position: [notification.lat, notification.lng],
-                timestamp: new Date().toLocaleString(),
-            };
-            // Add the new position from the clicked notification
-            setPositions((prevPositions) => [...prevPositions, newPosition]);
+        if (notification.message) {
+            const { lat, lng } = parseLocationMessage(notification.message);
+            if (!isNaN(lat) && !isNaN(lng)) {
+                const newPosition = [lat, lng];
+                // When a notification is clicked, set that position as selected
+                setSelectedPosition(newPosition);
+            }
         }
     };
 
@@ -54,7 +71,8 @@ export default function Dashboard() {
             </div>
 
             <div className="absolute inset-0 z-0">
-                <MyMap positions={positions} zoom={18} />
+                {/* Pass selectedPosition to MyMap */}
+                <MyMap positions={positions} zoom={18} selectedPosition={selectedPosition} />
             </div>
         </div>
     );
